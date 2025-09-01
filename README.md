@@ -1,6 +1,7 @@
 # geo_tagging_project
 
-Flutter Project where feature of geo tagging is being used to add data over image like (location where image is taken, time when image is taken).
+A new Flutter project.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

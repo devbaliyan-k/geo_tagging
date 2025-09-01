@@ -12,7 +12,7 @@ class GeoTaggingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const GeoTaggingHome(),
+      home: const HomeScreen(),
     );
   }
 }
