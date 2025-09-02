@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:geo_tagging_project/screens/home_screen.dart';
+import 'package:geo_tagging_project/utils/app_imports/app_imports.dart';
 
 void main() {
   runApp(const GeoTaggingApp());

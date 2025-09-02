@@ -25,19 +25,28 @@ class HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Geo Tagging"), centerTitle: true),
+      appBar: AppBar(
+        backgroundColor: AppColor.blueColor,
+        title: const TextWidget(
+          text: "Geo Tagging",
+          fontSize: 25,
+          color: AppColor.appBarTextColor,
+          fontStyle: FontStyle.italic,
+        ),
+        centerTitle: true,
+      ),
 
       body: Column(
         children: [
           Material(
-            color: Colors.green,
+            color: Colors.grey,
             child: TabBar(
               controller: geotaggingTabController,
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.white70,
+              labelColor: AppColor.blackColor,
+              unselectedLabelColor: AppColor.blackColor,
               tabs: [
-                Tab(text: "Watermark Form"),
-                Tab(text: "Meta Data Form"),
+                Tab(text: "Watermark Type"),
+                Tab(text: "Meta Data Type"),
               ],
             ),
           ),

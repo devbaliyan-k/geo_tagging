@@ -5,3 +5,6 @@ export 'package:geolocator/geolocator.dart';
 export 'package:geocoding/geocoding.dart';
 export 'package:geo_tagging_project/screens/meta_geo_tagging.dart';
 export 'package:geo_tagging_project/screens/watermark_geo_tagging.dart';
+export 'package:geo_tagging_project/utils/colors/app_colors.dart';
+export 'package:geo_tagging_project/utils/widgets/text_widget.dart';
+export 'package:geo_tagging_project/screens/home_screen.dart';

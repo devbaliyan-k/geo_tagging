@@ -17,7 +17,6 @@ class WatermarkGeoTaggingState extends State<WatermarkGeoTagging> {
 
   Future<void> _pickImage() async {
     try {
-      // Open camera
       final pickedFile = await _picker.pickImage(source: ImageSource.camera);
       if (pickedFile == null) return;
 
@@ -27,11 +26,13 @@ class WatermarkGeoTaggingState extends State<WatermarkGeoTagging> {
         _dateTime = null;
       });
 
-      // --- Location checks ---
+      // Location checks
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Location services are disabled.')),
+          const SnackBar(
+            content: TextWidget(text: 'Location services are disabled.'),
+          ),
         );
         return;
       }
@@ -41,7 +42,9 @@ class WatermarkGeoTaggingState extends State<WatermarkGeoTagging> {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permission denied.')),
+            const SnackBar(
+              content: TextWidget(text: 'Location permission denied.'),
+            ),
           );
           return;
         }
@@ -49,28 +52,27 @@ class WatermarkGeoTaggingState extends State<WatermarkGeoTagging> {
       if (permission == LocationPermission.deniedForever) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-              'Location permissions are permanently denied. Please enable from settings.',
+            content: TextWidget(
+              text:
+                  'Location permissions are permanently denied. Please enable from settings.',
             ),
           ),
         );
         return;
       }
 
-      // --- Get current position ---
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      // --- Reverse geocode to get address ---
       String formattedAddress = 'Unknown location';
       try {
-        final placemarks = await placemarkFromCoordinates(
+        final placeMarks = await placemarkFromCoordinates(
           position.latitude,
           position.longitude,
         );
-        if (placemarks.isNotEmpty) {
-          final p = placemarks.first;
+        if (placeMarks.isNotEmpty) {
+          final p = placeMarks.first;
           formattedAddress =
               "${p.name ?? ''} ${p.locality ?? ''}, ${p.subAdministrativeArea ?? ''}, ${p.administrativeArea ?? ''}, ${p.country ?? ''}"
                   .trim()
@@ -80,7 +82,6 @@ class WatermarkGeoTaggingState extends State<WatermarkGeoTagging> {
         debugPrint('Reverse geocoding failed: $e');
       }
 
-      // --- Date & time ---
       final formattedDateTime = DateFormat(
         'yyyy-MM-dd – HH:mm',
       ).format(DateTime.now());
@@ -93,7 +94,7 @@ class WatermarkGeoTaggingState extends State<WatermarkGeoTagging> {
       debugPrint("Error in _pickImage: $e");
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ).showSnackBar(SnackBar(content: TextWidget(text: 'Error: $e')));
     }
   }
 
@@ -102,17 +103,15 @@ class WatermarkGeoTaggingState extends State<WatermarkGeoTagging> {
     return Scaffold(
       body: Center(
         child: _image == null
-            ? const Text(
-                "No image captured yet",
-                style: TextStyle(fontSize: 18),
-              )
+            ? const TextWidget(text: "No image captured yet")
             : Stack(
-                alignment: Alignment.bottomLeft,
+                alignment:
+                    Alignment.bottomCenter, // 👈 bottom align the overlay
                 children: [
-                  // Image container
+                  /// Image in center
                   Container(
-                    width: double.infinity,
-                    height: 400,
+                    width: MediaQuery.sizeOf(context).width * 0.9,
+                    height: MediaQuery.sizeOf(context).height * 0.7,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       image: DecorationImage(
@@ -122,32 +121,38 @@ class WatermarkGeoTaggingState extends State<WatermarkGeoTagging> {
                     ),
                   ),
 
-                  // Overlay for text
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(10),
-                    color: Colors.black54,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (_address != null)
-                          Text(
-                            "📍 $_address",
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
+                  /// Bottom overlay with geotagging info
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.5),
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_address != null)
+                            TextWidget(
+                              text: "📍 $_address",
+                              fontSize: 16,
+                              color: AppColor.whiteColor,
                             ),
-                          ),
-                        if (_dateTime != null)
-                          Text(
-                            "🕒 $_dateTime",
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 14,
+                          if (_dateTime != null)
+                            TextWidget(
+                              text: "🕒 $_dateTime",
+                              fontSize: 16,
+                              color: AppColor.whiteColor,
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

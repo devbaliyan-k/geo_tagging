@@ -1,3 +1,4 @@
+import 'package:geo_tagging_project/utils/widgets/text_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:geo_tagging_project/utils/app_imports/app_imports.dart';
 
@@ -17,7 +18,6 @@ class _MetaGeoTaggingState extends State<MetaGeoTagging> {
 
   final ImagePicker _picker = ImagePicker();
 
-  /// Pick image from camera
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
 
@@ -29,12 +29,10 @@ class _MetaGeoTaggingState extends State<MetaGeoTagging> {
         ).format(DateTime.now());
       });
 
-      /// Get location after capturing image
       await _getLocation();
     }
   }
 
-  /// Get current GPS location and address
   Future<void> _getLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -43,7 +41,9 @@ class _MetaGeoTaggingState extends State<MetaGeoTagging> {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Location services are disabled")),
+        const SnackBar(
+          content: TextWidget(text: "Location services are disabled"),
+        ),
       );
       return;
     }
@@ -54,7 +54,9 @@ class _MetaGeoTaggingState extends State<MetaGeoTagging> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Location permission denied")),
+          const SnackBar(
+            content: TextWidget(text: "Location permission denied"),
+          ),
         );
         return;
       }
@@ -63,7 +65,9 @@ class _MetaGeoTaggingState extends State<MetaGeoTagging> {
     if (permission == LocationPermission.deniedForever) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Location permissions are permanently denied"),
+          content: TextWidget(
+            text: "Location permissions are permanently denied",
+          ),
         ),
       );
       return;
@@ -80,13 +84,13 @@ class _MetaGeoTaggingState extends State<MetaGeoTagging> {
     });
 
     // Reverse geocoding to get human-readable address
-    List<Placemark> placemarks = await placemarkFromCoordinates(
+    List<Placemark> placeMarks = await placemarkFromCoordinates(
       position.latitude,
       position.longitude,
     );
 
-    if (placemarks.isNotEmpty) {
-      Placemark place = placemarks.first;
+    if (placeMarks.isNotEmpty) {
+      Placemark place = placeMarks.first;
       setState(() {
         _address =
             "${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}";
@@ -103,26 +107,43 @@ class _MetaGeoTaggingState extends State<MetaGeoTagging> {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          title: const Text("Image Metadata"),
+          title: const TextWidget(
+            text: "Image Metadata",
+            color: AppColor.blueColor,
+            fontSize: 25,
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("📍 Address: ${_address ?? 'Fetching...'}"),
+              TextWidget(
+                text: "📍 Address: ${_address ?? 'Fetching...'}",
+                color: AppColor.whiteColor,
+              ),
               const SizedBox(height: 8),
-              Text("🕒 Captured: $_capturedTime"),
+              TextWidget(
+                text: "🕒 Captured: $_capturedTime",
+                color: AppColor.whiteColor,
+              ),
               const SizedBox(height: 8),
-              Text("🌐 Latitude: ${_latitude ?? '--'}"),
-              Text("🌐 Longitude: ${_longitude ?? '--'}"),
+              TextWidget(
+                text: "🌐 Latitude: ${_latitude ?? '--'}",
+                color: AppColor.whiteColor,
+              ),
+              TextWidget(
+                text: "🌐 Longitude: ${_longitude ?? '--'}",
+                color: AppColor.whiteColor,
+              ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Close"),
+              child: const TextWidget(text: "Close"),
             ),
           ],
         );
@@ -133,17 +154,17 @@ class _MetaGeoTaggingState extends State<MetaGeoTagging> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Geo Tagging Example")),
-
       body: Center(
         child: _imageFile == null
-            ? const Text("Click the camera button to capture an image")
+            ? const TextWidget(
+                text: "Click the camera button to capture an image",
+              )
             : Stack(
                 children: [
                   /// Display Captured Image
                   Container(
-                    width: 300,
-                    height: 200,
+                    width: MediaQuery.sizeOf(context).width * 0.9,
+                    height: MediaQuery.sizeOf(context).height * 0.6,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       image: DecorationImage(
@@ -170,7 +191,6 @@ class _MetaGeoTaggingState extends State<MetaGeoTagging> {
               ),
       ),
 
-      /// FloatingActionButton to capture image
       floatingActionButton: FloatingActionButton(
         onPressed: _pickImage,
         child: const Icon(Icons.camera_alt),
